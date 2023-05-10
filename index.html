@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake Game By AHR</title>
+  <style>
+    .container{
+    }
+    .inputs {
+    display: flex;
+    justify-content: space-between;
+}
+canvas {
+  border: 3px solid #03a57d;
+    display: block;
+    margin: 10px auto;
+    width: calc(100% - 20px);
+    max-width: fit-content;
+    max-height: 90vh;
+}
+.controlBtn {
+  margin: 10px auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 200px;
+  height: 200px;
+}
+.usersList{
+    background: #ccc;
+}
+#UsersList {
+    padding-inline-start: 0;
+    font-size: 2vw;
+    padding: 8px;
+    list-style: none;}
+.cBtn {
+  font-size: 30px;
+  background: #cfcfcf;
+  border-radius: 10px;
+  border: 1px solid #000;
+  outline: none;
+}
+.cBtn:active {
+  background: #75c7b7;
+}
+.cBtn:nth-child(1) {
+  grid-area: 2 / 1 / 3 / 2;
+}
+.cBtn:nth-child(2) {
+  grid-area: 1 / 2 / 2 / 3;
+}
+.cBtn:nth-child(3) {
+  grid-area: 2 / 3 / 3 / 4;
+}
+.cBtn:nth-child(4) {
+  grid-area: 3 / 2 / 4 / 3;
+}
+
+
+  </style>
+</head>
+
+<body>
+<div class="inputs">
+  <div id="score">
+    <!-- <b>Your Score</b> <br><i>Name:</i>  <br><i>Score: </i> -->
+  </div>
+  <div id="highscore"></div>
+</div>
+  <div class="container">
+  
+
+  <canvas id="canvas" width="800px" height="500px">
+  </canvas>
+
+ 
+
+  </div>
+  <div class="controlBtn">
+    <button class="cBtn" onclick="dirc('left');">&larr; </button>
+    <button class="cBtn" onclick="dirc('up');">&uarr;</button>
+    <button class="cBtn" onclick="dirc('right');">&rarr;</button>
+    <button class="cBtn" onclick="dirc('down');">&darr;</button>
+  </div>
+
+
+
+
+
+
+
+
+
+<!-- <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase.js"></script> -->
+<!-- <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js"></script> -->
+<!-- <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js"></script> -->
+
+<!-- firebase -->
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js";
+  import { getDatabase, set, get, update, remove, ref, child } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB22KZZMsavdg5Jr4B9bjvLP8_NZR9sbZA",
+    authDomain: "snake-game-39c3b.firebaseapp.com",
+    databaseURL: "https://snake-game-39c3b-default-rtdb.firebaseio.com",
+    projectId: "snake-game-39c3b",
+    storageBucket: "snake-game-39c3b.appspot.com",
+    messagingSenderId: "277589565669",
+    appId: "1:277589565669:web:06a51e3c4cb641d855b40c",
+    measurementId: "G-YL7GS92L79"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  // const analytics = getAnalytics(app);
+
+
+const db = getDatabase();
+
+
+
+  // const dbRef = firebase.database().ref();
+// const scoresRef = dbRef.child('score-solo');
+// scoresRef.push({'name':'Raihan','score':'100'},(e)=>{
+//   console.log(e);
+// });
+
+var highscoreval = 0;
+function findData(){
+  const highscore = document.getElementById('highscore');
+  const dbref = ref(db); 
+  
+
+            get(child(dbref, "score-solo"))
+            .then((snapshot)=>{
+                if(snapshot.exists()){
+                  highscoreval = snapshot.val().Score;
+                    highscore.innerHTML ="<b>High Score</b> <br><i>Name:</i> "+snapshot.val().Name+" <br><i>Score: </i>"+snapshot.val().Score;
+                } else {
+                    alert("No data found");
+                }
+            })
+            .catch((error)=>{
+                console.log(error)
+            });
+}
+findData();
+
+function insertToFirebase(name,score) {
+  let times = Date.now();
+  findData();
+  console.log(highscoreval);
+  if(highscoreval <= score){
+    alert('Your Score is High');
+    set(ref(db,'score-solo/'),{
+    Name : name,
+    Score: score
+  })
+  .then((e)=>{
+    findData();
+  })
+  .catch((error)=>{
+    console.log(error);
+  });
+  }
+  
+  // console.log(times);
+
+  
+}
+// insertToFirebase();
+
+
+
+
+
+
+
+
+
+  	
+var canvas = document.getElementById("canvas");
+var scoreboard = document.getElementById("score");
+var ctx = canvas.getContext("2d");
+var userNames = prompt("Enter Your Name");
+if(userNames===''){
+  userNames = 'Unknown';
+}
+
+
+function init(){
+	score = 0;
+	dir = 'right';
+	userI = 0;
+	
+	
+	balls[userI].pos=[];
+
+	balls[userI].pos.push({ x: 0, y: userI+1 });
+	balls[userI].pos.push({ x: 20, y: userI+1 });
+	balls[userI].pos.push({ x: 40, y: userI+1 });
+
+    lastball = { pos: [{ x: 40, y: userI+1 }] };
+}
+var score = 0;
+var speed = 200;
+var dir = "right";
+var userI = 0;
+var balls = [
+  {
+    name: "raihan",
+    pos: [
+      { x: 0, y: 0 },
+      { x: 20, y: 0 },
+      { x: 40, y: 0 }
+    ]
+  }
+];
+
+var lastball = { pos: [{ x: 40, y: 0 }] };
+var lastvalue = 0;
+var foodx = 0;
+var foody = 0;
+
+window.addEventListener("keydown", (e) => {
+  if ((e.keyCode === 65) & (dir !== "right")) {
+    dir = "left";
+  } else if ((e.keyCode === 87) & (dir !== "down")) {
+    dir = "up";
+  } else if ((e.keyCode === 68) & (dir !== "left")) {
+    dir = "right";
+  } else if ((e.keyCode === 83) & (dir !== "up")) {
+    dir = "down";
+  }
+});
+function dirc(d) {
+  if ((d === "left") & (dir !== "right")) {
+    dir = "left";
+  } else if ((d === "up") & (dir !== "down")) {
+    dir = "up";
+  } else if ((d === "right") & (dir !== "left")) {
+    dir = "right";
+  } else if ((d === "down") & (dir !== "up")) {
+    dir = "down";
+  }
+}
+
+function createFood() {
+  foodx = Math.floor(Math.random() * 39) * 20;
+  foody = Math.floor(Math.random() * 24) * 20;
+}
+createFood();
+
+
+
+function move() {
+  ctx.clearRect(0, 0, 800, 500);
+  balls[userI].pos.shift();
+  add();
+  
+  // food start
+  ctx.fillStyle = "#03a57d";
+  ctx.beginPath();
+  ctx.roundRect(foodx, foody, 20, 20, 10);
+  ctx.fill();
+
+  if (lastball.x === foodx && lastball.y === foody) {
+    score += 5;
+    createFood();
+    add();
+  }
+  // food end
+
+
+  for (let i = 0; i < balls[userI].pos.length; i++) {
+
+    if (i === balls[userI].pos.length - 1) {
+      ctx.fillStyle = "#ff0000";
+    } else {
+      ctx.fillStyle = "#787878";
+    }
+    ctx.beginPath();
+    ctx.roundRect(balls[userI].pos[i].x, balls[userI].pos[i].y, 19, 19, 6);
+    ctx.fill();
+
+
+
+  ctx.font = "30px Arial";
+  ctx.fillText("Score: " + score, 400, 480);
+    if (
+      lastball.x === balls[userI].pos[i].x &&
+       lastball.y === balls[userI].pos[i].y 
+      && i < balls[userI].pos.length - 2
+    ) {
+    	clearInterval(inerval);
+    	ctx.font ="40px Arial";
+    ctx.fillStyle = "#BABABA";
+    ctx.fillRect(0,0, 800, 500);
+    ctx.fillStyle = "#000";
+
+    let so =`Game Over, Score: ${score}`;
+    ctx.textAlign = "center";
+    	ctx.fillText(so,400,250);
+      scoreboard.innerHTML ="<b>Your Score</b> <br><i>Name:</i> "+userNames+" <br><i>Score: </i>"+ score;
+  insertToFirebase(userNames,score);
+
+  init();
+
+    }
+  }
+  
+  
+
+  // console.log(balls);
+}
+
+function add() {
+  lastvalue = balls[userI].pos.length - 1;
+  lastball = balls[userI].pos[lastvalue];
+
+// if  end from border
+    
+    // border
+
+  // moving start
+  if (dir === "right") {
+  	if (lastball.x > 780) {
+      balls[userI].pos.push({ x: 0, y: lastball.y });
+    }else{
+      balls[userI].pos.push({ x: lastball.x + 20, y: lastball.y });
+    }
+  } else if (dir === "down") {
+  	if (lastball.y > 480) {
+      balls[userI].pos.push({ x: lastball.x, y: 0 });
+    }else{
+    balls[userI].pos.push({ x: lastball.x, y: lastball.y + 20 });
+    }
+  } else if (dir === "left") {
+  	if (lastball.x < 0) {
+      balls[userI].pos.push({ x: 780, y: lastball.y });
+    }else{
+    balls[userI].pos.push({ x: lastball.x - 20, y: lastball.y });
+    }
+  } else if (dir === "up") {
+  	if (lastball.y < 0) {
+      balls[userI].pos.push({ x: lastball.x, y: 480 });
+    }else{
+    balls[userI].pos.push({ x: lastball.x, y: lastball.y - 20 });
+    }
+  }
+  // moving end
+}
+
+var inerval = setInterval(move, speed);
+
+  </script>
+</body>
+
+</html>
