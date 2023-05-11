@@ -81,10 +81,10 @@ canvas {
 
   </div>
   <div class="controlBtn">
-    <button class="cBtn" onclick="dirc('left');">&larr; </button>
-    <button class="cBtn" onclick="dirc('up');">&uarr;</button>
-    <button class="cBtn" onclick="dirc('right');">&rarr;</button>
-    <button class="cBtn" onclick="dirc('down');">&darr;</button>
+    <button class="cBtn" data-dir="left">&larr; </button>
+    <button class="cBtn" data-dir="up">&uarr;</button>
+    <button class="cBtn" data-dir="right">&rarr;</button>
+    <button class="cBtn" data-dir="down">&darr;</button>
   </div>
 
 
@@ -187,6 +187,7 @@ function insertToFirebase(name,score) {
   	
 var canvas = document.getElementById("canvas");
 var scoreboard = document.getElementById("score");
+var cBtn = document.getElementsByClassName("cBtn");
 var ctx = canvas.getContext("2d");
 var userNames = prompt("Enter Your Name");
 if(userNames===''){
@@ -239,17 +240,22 @@ window.addEventListener("keydown", (e) => {
     dir = "down";
   }
 });
-function dirc(d) {
-  if ((d === "left") & (dir !== "right")) {
+
+for(let i=0;i<cBtn.length;i++){
+  cBtn[i].addEventListener('click',()=>{
+    if ((cBtn[i].getAttribute('data-dir') === "left") & (dir !== "right")) {
     dir = "left";
-  } else if ((d === "up") & (dir !== "down")) {
+  } else if ((cBtn[i].getAttribute('data-dir')  === "up") & (dir !== "down")) {
     dir = "up";
-  } else if ((d === "right") & (dir !== "left")) {
+  } else if ((cBtn[i].getAttribute('data-dir')  === "right") & (dir !== "left")) {
     dir = "right";
-  } else if ((d === "down") & (dir !== "up")) {
+  } else if ((cBtn[i].getAttribute('data-dir')  === "down") & (dir !== "up")) {
     dir = "down";
   }
+  });
 }
+
+
 
 function createFood() {
   foodx = Math.floor(Math.random() * 39) * 20;
